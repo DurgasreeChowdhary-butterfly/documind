@@ -26,33 +26,26 @@ def build_graph():
     # ── 2. Add all agent nodes ────────────────────────────────────
     graph.add_node("router",        router_agent)
     graph.add_node("retriever",     retriever_agent)
-    graph.add_node("answer",        answer_agent)
+    graph.add_node("generator",     answer_agent)
     graph.add_node("memory_save",   memory_agent)
 
     # ── 3. Set entry point ────────────────────────────────────────
-    # Every question starts at router
     graph.set_entry_point("router")
 
     # ── 4. Conditional edges from router ─────────────────────────
-    # Router decides: retrieval → retriever node
-    #                 memory    → answer node (history already in state)
-    #                 chitchat  → answer node (no retrieval needed)
     graph.add_conditional_edges(
-        "router",           # from this node
-        decide_next_agent,  # call this function to get next node name
+        "router",
+        decide_next_agent,
         {
-            "retrieval": "retriever",   # if "retrieval" → go to retriever
-            "memory":    "answer",      # if "memory"    → skip to answer
-            "chitchat":  "answer"       # if "chitchat"  → skip to answer
+            "retrieval": "retriever",
+            "memory":    "generator",
+            "chitchat":  "generator"
         }
     )
 
     # ── 5. Fixed edges ────────────────────────────────────────────
-    # After retriever → always go to answer
-    graph.add_edge("retriever", "answer")
-
-    # After answer → always save to memory
-    graph.add_edge("answer", "memory_save")
+    graph.add_edge("retriever", "generator")
+    graph.add_edge("generator", "memory_save")
 
     # After memory_save → END
     graph.add_edge("memory_save", END)

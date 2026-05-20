@@ -171,3 +171,33 @@ async def chat(request: ChatRequest):
         return result
     except Exception as e:
         raise HTTPException(500, f"Chat error: {str(e)}")
+
+# Add this import at the top of main.py
+from app.graph import run_graph
+
+# Add this new endpoint — keep /api/chat as-is
+class AgentChatRequest(BaseModel):
+    question: str
+    chat_history: list = []   # frontend sends history each time
+
+@app.post("/api/agent-chat")
+async def agent_chat(request: AgentChatRequest):
+    """
+    Multi-agent chat endpoint.
+    Uses LangGraph — replaces single-chain /api/chat.
+    """
+    if not request.question.strip():
+        raise HTTPException(400, "Question cannot be empty.")
+
+    registry = load_pdf_registry()
+    if not registry:
+        raise HTTPException(400, "No PDFs indexed. Upload a document first.")
+
+    try:
+        result = run_graph(
+            question=request.question,
+            chat_history=request.chat_history
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(500, f"Agent error: {str(e)}")

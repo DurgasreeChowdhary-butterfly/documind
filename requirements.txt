@@ -9,17 +9,20 @@ pydantic==2.7.1
 pymupdf==1.24.3
 
 # LangChain
-langchain==0.2.1
-langchain-community==0.2.1
-langchain-google-genai==1.0.5
-langchain-pinecone==0.1.1
+langchain
+langchain-community
+langchain-core
+langchain-text-splitters
+langchain-google-genai
+langchain-pinecone
+langchain-huggingface
 
 # Embeddings
 sentence-transformers==2.7.0
 
 # Vector Stores
 faiss-cpu==1.8.0
-pinecone-client==3.2.2
+pinecone
 
 # LLM
-google-generativeai==0.5.4
+google-generativeai

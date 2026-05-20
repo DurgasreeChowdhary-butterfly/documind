@@ -1,0 +1,21 @@
+services:
+  documind:
+    # Build from our Dockerfile
+    build: .
+    
+    # Map port: your browser → container
+    # localhost:8000 → container:8000
+    ports:
+      - "8000:8000"
+    
+    # Load environment variables from .env file
+    env_file:
+      - .env
+    
+    # Mount data folder so PDFs persist
+    # Even if container restarts, your indexed PDFs stay
+    volumes:
+      - ./data:/app/data
+    
+    # Always restart if container crashes
+    restart: unless-stopped

@@ -18,9 +18,6 @@ langchain-pinecone
 langchain-huggingface
 langgraph
 
-# Embeddings
-sentence-transformers==2.7.0
-
 # Vector Stores
 faiss-cpu==1.8.0
 pinecone

@@ -8,14 +8,13 @@ import os
 import pickle
 import numpy as np
 from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from app.config import settings
 
 # ── Embedding model (shared across both stores) ───────────────────
-embeddings_model = HuggingFaceEmbeddings(
-    model_name="all-MiniLM-L6-v2",
-    model_kwargs={"device": "cpu"},
-    encode_kwargs={"normalize_embeddings": True}
+embeddings_model = GoogleGenerativeAIEmbeddings(
+    model="models/embedding-001",
+    google_api_key=settings.GEMINI_API_KEY
 )
 
 
@@ -31,7 +30,7 @@ def _get_pinecone_store(index_name: str):
     if index_name not in existing:
         pc.create_index(
             name=index_name,
-            dimension=384,          # all-MiniLM-L6-v2 output size
+            dimension=768,          # Google embedding-001 output size
             metric="cosine",
             spec=ServerlessSpec(cloud="aws", region="us-east-1")
         )
@@ -158,7 +157,7 @@ def get_store_stats() -> dict:
             return {
                 "store": "pinecone",
                 "total_vectors": stats.total_vector_count,
-                "dimension": 384
+                "dimension": 768
             }
         except Exception:
             return {"store": "pinecone", "total_vectors": 0}
@@ -168,5 +167,5 @@ def get_store_stats() -> dict:
         return {
             "store": "faiss",
             "total_vectors": total,
-            "dimension": 384
+            "dimension": 768
         }

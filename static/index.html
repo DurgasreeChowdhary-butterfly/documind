@@ -685,6 +685,7 @@
 
 <script>
   let isLoading = false;
+  let chatHistory = [];
   const messagesEl = document.getElementById('messages');
   const chatArea   = document.getElementById('chatArea');
   const questionEl = document.getElementById('question');
@@ -869,15 +870,16 @@
     const typingEl = addTyping();
 
     try {
-      const r = await fetch('/api/chat', {
+      const r = await fetch('/api/agent-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q, top_k: 4 })
+        body: JSON.stringify({ question: q, chat_history: chatHistory })
       });
       const d = await r.json();
       typingEl.remove();
       if (!r.ok) throw new Error(d.detail);
       addMessage('assistant', d.answer, d.sources);
+      chatHistory = d.chat_history || chatHistory;
     } catch(e) {
       typingEl.remove();
       addMessage('assistant', `Sorry, something went wrong: ${e.message}`);
